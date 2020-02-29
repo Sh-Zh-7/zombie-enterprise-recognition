@@ -7,7 +7,6 @@
 from utils import *
 from tabulate import tabulate
 
-# Actually, there is no missing value
 # The NA data do have meanings
 def GetMissingValues(data_set: pd.DataFrame):
     """ Show missing numbers if it exists """
@@ -28,7 +27,6 @@ def GetMissingValues(data_set: pd.DataFrame):
     result.sort_values(by=["missing rate"], axis=0, ascending=False, inplace=True)
     return result
 
-
 def Save2Markdown(data_set, dir_path):
     # Get all information
     numerical_feature = data_set.describe()  # Numerical data
@@ -40,13 +38,14 @@ def Save2Markdown(data_set, dir_path):
         "Missing conditions": missing_conditions
     }
     # Save to relevant markdown files
-    save_path = os.path.join(dir_path, data_set.name + "_set_analysis.md")
+    save_path = os.path.join(dir_path, data_set.name + "_analysis.md")
     with open(save_path, "w") as f:  # Won't continue to append when rerunning
         for info_key, info_value in information_dict.items():
             f.write("# " + info_key + "\n")
             table = tabulate(info_value, headers="keys", tablefmt="pipe")
             f.write(table)
             f.write("\n\n")
+
 
 if __name__ == "__main__":
     SetLogger("../log")
@@ -56,9 +55,10 @@ if __name__ == "__main__":
     df_train_set, df_test_set = GetDataSet("../data")
     train_y = df_train_set["flag"].values
     df_train_set.drop("flag", axis=1, inplace=True)
+    df_test_set.drop("flag", axis=1, inplace=True)
     logging.info("Load data set done!")
 
-    # # Check missing conditions
-    # Save2Markdown(df_train_set, ".")
-    # Save2Markdown(df_test_set, ".")
+    # Check missing conditions
+    Save2Markdown(df_train_set, ".")
+    Save2Markdown(df_test_set, ".")
 
