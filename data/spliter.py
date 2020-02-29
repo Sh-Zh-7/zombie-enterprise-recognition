@@ -8,6 +8,8 @@
 
 import random
 import pandas as pd
+import utils
+import logging
 
 SPILT_RATE = 0.2
 
@@ -28,14 +30,15 @@ def GetRandomNumber(n: int):
 
 def ExportTrainAndTestSet(data_set: pd.DataFrame, train_rows, test_rows):
     """ 根据给定的训练集和测试集行数导出对应的train_set和test_set """
-    data_set.iloc[train_rows].to_csv("train_set.csv")
-    data_set.iloc[test_rows].to_csv("test_set.csv")
+    data_set.iloc[train_rows].to_csv("train_set.csv", index=False)
+    data_set.iloc[test_rows].to_csv("test_set.csv", index=False)
 
 
 if __name__ == "__main__":
+    utils.SetLogger("../log")
     data_set = GetDataSet("./data_set.csv")
     line_count = GetRowCount(data_set)
     train_lines, test_lines = GetRandomNumber(line_count)
-    print("Export train set and test set")
+    logging.info("Export train set and test set...")
     ExportTrainAndTestSet(data_set, train_lines, test_lines)
-    print("Done!")
+    logging.info("Done!")
