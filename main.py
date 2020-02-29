@@ -12,7 +12,7 @@ def FeatureEngineering(df):
     return df
 
 def LoadModel(path):
-    params = Params(os.path.join(path, "params.json"))
+    params = Params(os.path.join(path, "best_params.json"))
     model = RandomForestClassifier(**params.dict)
     return model
 
@@ -43,16 +43,11 @@ if __name__ == "__main__":
 
     # Training
     logging.info("Start training..")
+    # https://www.cnblogs.com/pinard/p/6160412.html
     clf = LoadModel("./models/random_forest")
     clf.fit(df_train_set, train_y)
+    logging.info("Done!!!!")
 
     # Get Accuracy
     GetAccuracy(clf, df_test_set, test_y)
-
-
-
-
-
-
-
 
