@@ -1,7 +1,7 @@
 import os
 import json
+import logging
 import pandas as pd
-from tabulate import tabulate
 
 class Params:
     """ Load models's hyper parameters """
@@ -21,15 +21,15 @@ class Params:
     def dict(self):
         return self.__dict__
 
+
 # Press Ctrl+- to hide the detail of the functions
 def GetDummies(data_set, categorical_features):
     """ Reserve the origin attribute while getting dummies """
     reserve_name = data_set.name
-    reserve_trn_len = data_set.trn_len
     data_set = pd.get_dummies(data_set, columns=categorical_features, drop_first=True)
     data_set.name = reserve_name
-    data_set.trn_len = reserve_trn_len
     return data_set
+
 
 def ConcatDF(train_set, test_set):
     """
@@ -41,67 +41,65 @@ def ConcatDF(train_set, test_set):
     df_all.trn_len = train_set.shape[0]
     return df_all
 
+
 def DivideDF(df_all):
     """ Divide the data set that concatenated from train set and test set """
     return df_all.iloc[:df_all.trn_len], df_all.iloc[df_all.trn_len:]
 
+
 def GetDataSet(path):
     """ Get train and test data set. """
     # Read csv files
-    df_train_set = pd.read_csv(os.path.join(path, "train.csv"))
-    df_test_set = pd.read_csv(os.path.join(path, "test.csv"))
+    df_train_set = pd.read_csv(os.path.join(path, "train_set.csv"))
+    df_test_set = pd.read_csv(os.path.join(path, "test_set.csv"))
     # Filter
-    df_train_set.drop("Id", axis=1, inplace=True)
-    df_test_set.drop("Id", axis=1, inplace=True)
+    df_train_set.drop("ID", axis=1, inplace=True)
+    df_test_set.drop("ID", axis=1, inplace=True)
     # Assign name
     df_train_set.name = "train"
     df_test_set.name = "test"
-    # Filter����Ĳ���������������Ȼ���صľ���ԭ����DataFrame������
     return df_train_set, df_test_set
+
+
+def GetNumericalAndCategoricalFeatures(data_set: pd.DataFrame):
+    """ As it's name suggests, do feature engineering. """
+    # Get numerical and categorical condition
+    numerical_condition = data_set.describe()  # Numerical data
+    categorical_condition = data_set.describe(include=["O"])  # categorical data
+    # Get what pandas think it is numerical or categorical features
+    numerical_features = list(numerical_condition.columns)
+    categorical_features = list(categorical_condition.columns)
+    # Adjust the old features set
+    categorical_features.append("注册时间")
+    categorical_features.append("专利")
+    categorical_features.append("著作权")
+    categorical_features.append("商标")
+    numerical_features = [numerical_feature for numerical_feature in numerical_features
+                                            if numerical_feature not in ["注册时间", "专利", "著作权", "商标"]]
+    return numerical_features, categorical_features
+
+
+def SetLogger(log_path):
+    """ Decide which directory to log """
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    if logger.handlers:
+        # Add file handler
+        file_handler = logging.FileHandler(os.path.join(log_path, "train.log"))
+        file_handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s: %(message)s"))
+        logger.addHandler(file_handler)
+        # Add stream handler
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(logging.Formatter("%(message)s"))
+        logger.addHandler(stream_handler)
+
 
 def DealWithMissingValues(data_set: pd.DataFrame):
     """ Simply fill nan values """
-    data_set.fillna(method="pad", inplace=True)
+    # 如果使用pad会有一个缺陷，那就是他只看前面元素的情况来填充这里的值
+    # 然而如果第一个数据就有缺失值，他是无法填充的
+    data_set.fillna(data_set.max(), inplace=True)
 
-# Actually, there is no missing value
-# The NA data do have meanings
-def GetMissingValues(data_set: pd.DataFrame):
-    """ Show missing numbers if it exists """
-    # Get missing features and missing line counts
-    missing_features = []
-    missing_line_counts = []
-    for column in data_set.columns:
-        missing_line_count = data_set[column].isnull().sum()
-        if missing_line_count != 0:
-            missing_features.append(column)
-            missing_line_counts.append(missing_line_count)
-    missing_rate = [item / data_set.shape[0] for item in missing_line_counts]
-    # Create given data set
-    result = pd.DataFrame({"features": missing_features,
-                           "missing lines": missing_line_counts,
-                           "missing rate": missing_rate},
-                          dtype="int64")
-    return result
-
-
-def Save2Markdown(data_set, dir_path):
-    # Get all information
-    numerical_feature = data_set.describe()  # Numerical data
-    categorical_feature = data_set.describe(include=["O"])  # categorical data
-    missing_conditions = GetMissingValues(data_set)
-    information_dict = {
-        "Numerical feature": numerical_feature,
-        "Categorical feature": categorical_feature,
-        "Missing conditions": missing_conditions
-    }
-    # Save to relevant markdown files
-    save_path = os.path.join(dir_path, data_set.name + "_set_analysis.md")
-    with open(save_path, "w") as f:  # Won't continue to append when rerunning
-        for info_key, info_value in information_dict.items():
-            f.write("# " + info_key + "\n")
-            table = tabulate(info_value, headers="keys", tablefmt="pipe")
-            f.write(table)
-            f.write("\n\n")
 
 def CheckAndMakeDir(path):
     if not os.path.exists(path):
