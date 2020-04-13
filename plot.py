@@ -1,6 +1,6 @@
 """
 My own plot code, only to plot more conveniently.
-See more details on https://github.com/Sh-Zh-7/ML_plot
+See more details on https://github.com/Sh-Zh-7/machine-learning-plot
 """
 
 import matplotlib.pyplot as plt

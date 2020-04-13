@@ -2,6 +2,8 @@ import os
 import json
 import logging
 import pandas as pd
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+
 
 class Params:
     """ Load models's hyper parameters """
@@ -26,7 +28,7 @@ class Params:
 def GetDummies(data_set, categorical_features):
     """ Reserve the origin attribute while getting dummies """
     reserve_name = data_set.name
-    data_set = pd.get_dummies(data_set, columns=categorical_features, drop_first=True)
+    data_set = pd.get_dummies(data_set, columns=categorical_features, drop_first=False)
     data_set.name = reserve_name
     return data_set
 
@@ -78,6 +80,14 @@ def GetNumericalAndCategoricalFeatures(data_set: pd.DataFrame):
                                             if numerical_feature not in ["注册时间", "专利", "著作权", "商标"]]
     return numerical_features, categorical_features
 
+def FeatureEngineering(df):
+    numerical_features, categorical_features = GetNumericalAndCategoricalFeatures(df)
+    # Deal with numerical features
+    df[numerical_features] = MinMaxScaler().fit_transform(df[numerical_features])
+    # Deal with categorical features
+    df = GetDummies(df, categorical_features)
+    return df
+
 
 def SetLogger(log_path):
     """ Decide which directory to log """
@@ -98,10 +108,16 @@ def DealWithMissingValues(data_set: pd.DataFrame):
     """ Simply fill nan values """
     # 如果使用pad会有一个缺陷，那就是他只看前面元素的情况来填充这里的值
     # 然而如果第一个数据就有缺失值，他是无法填充的
-    data_set.fillna(data_set.max(), inplace=True)
+    data_set.fillna(0, inplace=True)
 
 
 def CheckAndMakeDir(path):
     if not os.path.exists(path):
         print("The {} doesn't exist! Make a new directory!".format(path))
         os.makedirs(path)
+
+def LoadModel(model_path, model):
+    path = model_path[model]
+    params = Params(os.path.join(path, "best_params.json"))
+    estimator = model(**params.dict)
+    return estimator

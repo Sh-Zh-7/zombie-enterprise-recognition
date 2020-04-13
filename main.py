@@ -1,20 +1,32 @@
+from sklearn.svm import SVC
+
 from utils import *
-from sklearn.ensemble import RandomForestClassifier
+from ensemble import StackingAverageModel
+
+from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
+from mlens.ensemble import SuperLearner
+import xgboost
+import lightgbm
+from mlxtend.classifier import StackingClassifier
 
-def FeatureEngineering(df):
-    numerical_features, categorical_features = GetNumericalAndCategoricalFeatures(df)
-    # Deal with numerical features
-    df[numerical_features] = StandardScaler().fit_transform(df[numerical_features])
-    # Deal with categorical features
-    df = GetDummies(df, categorical_features)
-    return df
+import warnings
+warnings.filterwarnings("ignore")
 
-def LoadModel(path):
-    params = Params(os.path.join(path, "best_params.json"))
-    model = RandomForestClassifier(**params.dict)
-    return model
+SEED = 233
+
+model_path = {
+    AdaBoostClassifier: "./models/AdaBoost",
+    KNeighborsClassifier: "./models/KNN",
+    LogisticRegression: "./models/LogisticRegression",
+    RandomForestClassifier: "./models/RandomForest",
+    SVC: "./models/SVC"
+}
+models = [AdaBoostClassifier, KNeighborsClassifier, LogisticRegression, RandomForestClassifier]
+
 
 def GetAccuracy(model, data_set, y_true):
     y_pred = model.predict(data_set)
@@ -42,12 +54,24 @@ if __name__ == "__main__":
     logging.info("Done!")
 
     # Training
-    logging.info("Start training..")
-    # https://www.cnblogs.com/pinard/p/6160412.html
-    clf = LoadModel("./models/random_forest")
-    clf.fit(df_train_set, train_y)
-    logging.info("Done!!!!")
+    # In mlens part, you don't need to train the base estimator one by one.
+    model_instance = []
+    for model in models:
+        model_instance.append(LoadModel(model_path, model))
+    # meta_model = SVC(kernel="rbf", degree=3, probability=True)
+    meta_model = LogisticRegression()
+
+    # Ensemble
+    # ensemble = SuperLearner(scorer=accuracy_score, random_state=SEED)
+    # ensemble.add(model_instance)
+    # ensemble.add_meta(lightgbm.LGBMClassifier())
+    # ensemble.fit(df_train_set, train_y)
+
+    # ensemble = StackingAverageModel(model_instance, meta_model)
+    # ensemble.fit(df_train_set.values, train_y)
+
+    ensemble = StackingClassifier(classifiers=model_instance, meta_classifier=meta_model, use_probas=True)
+    ensemble.fit(df_train_set.values, train_y)
 
     # Get Accuracy
-    GetAccuracy(clf, df_test_set, test_y)
-
+    GetAccuracy(ensemble, df_test_set, test_y)
