@@ -1,0 +1,6 @@
+{
+  "C": [0.25, 0.5, 0.75, 1.0],
+  "kernel": ["rbf", "linear", "poly", "sigmoid"],
+  "degree": [3],
+  "probability": ["True"]
+}
