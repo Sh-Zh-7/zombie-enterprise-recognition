@@ -1,8 +1,9 @@
-import os
 import json
 import logging
+import os
+
 import pandas as pd
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler
 
 
 class Params:

@@ -1,5 +1,5 @@
-from utils import *
-from main import model_path, models
+from src.utils import *
+from src.main import model_path, models
 from sklearn.metrics import auc, roc_curve, \
     accuracy_score, precision_score, recall_score
 
@@ -42,11 +42,11 @@ def GetMetrics(y_true, y_pred):
     return metrics
 
 if __name__ == "__main__":
-    SetLogger("./log")
+    SetLogger("../log")
 
     # Get test set, train set and its target values
     logging.info("Loading data set..")
-    df_train_set, df_test_set = GetDataSet("./data")
+    df_train_set, df_test_set = GetDataSet("../data")
     # Get labels
     train_y = df_train_set["flag"].values
     df_train_set.drop("flag", axis=1, inplace=True)

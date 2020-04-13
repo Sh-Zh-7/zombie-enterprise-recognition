@@ -1,4 +1,4 @@
-from main import *
+from src.main import *
 
 from sklearn.model_selection import GridSearchCV
 
@@ -14,11 +14,11 @@ def SearchParams(model, trn_x, trn_y):
 
 
 if __name__ == "__main__":
-    SetLogger("./log")
+    SetLogger("../log")
 
     # Get test set, train set and its target values
     logging.info("Loading data set..")
-    df_train_set, df_test_set = GetDataSet("./data")
+    df_train_set, df_test_set = GetDataSet("../data")
     # Get labels
     train_y = df_train_set["flag"].values
     df_train_set.drop("flag", axis=1, inplace=True)

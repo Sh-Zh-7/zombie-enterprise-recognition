@@ -1,16 +1,11 @@
 from sklearn.svm import SVC
 
-from utils import *
-from ensemble import StackingAverageModel
+from src.utils import *
 
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
-from mlens.ensemble import SuperLearner
-import xgboost
-import lightgbm
 from mlxtend.classifier import StackingClassifier
 
 import warnings
@@ -19,11 +14,11 @@ warnings.filterwarnings("ignore")
 SEED = 233
 
 model_path = {
-    AdaBoostClassifier: "./models/AdaBoost",
-    KNeighborsClassifier: "./models/KNN",
-    LogisticRegression: "./models/LogisticRegression",
-    RandomForestClassifier: "./models/RandomForest",
-    SVC: "./models/SVC"
+    AdaBoostClassifier: "../models/AdaBoost",
+    KNeighborsClassifier: "../models/KNN",
+    LogisticRegression: "../models/LogisticRegression",
+    RandomForestClassifier: "../models/RandomForest",
+    SVC: "../models/SVC"
 }
 models = [AdaBoostClassifier, KNeighborsClassifier, LogisticRegression, RandomForestClassifier]
 
@@ -33,11 +28,11 @@ def GetAccuracy(model, data_set, y_true):
     print(accuracy_score(y_true, y_pred))
 
 if __name__ == "__main__":
-    SetLogger("./log")
+    SetLogger("../log")
 
     # Get test set, train set and its target values
     logging.info("Loading data set..")
-    df_train_set, df_test_set = GetDataSet("./data")
+    df_train_set, df_test_set = GetDataSet("../data")
     # Get labels
     train_y = df_train_set["flag"].values
     df_train_set.drop("flag", axis=1, inplace=True)
