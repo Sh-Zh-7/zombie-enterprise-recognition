@@ -1,9 +1,0 @@
-{
-    "algorithm": "auto",
-    "leaf_size": 30,
-    "metric": "minkowski",
-    "n_jobs": 1,
-    "n_neighbors": 7,
-    "p": 1,
-    "weights": "uniform"
-}

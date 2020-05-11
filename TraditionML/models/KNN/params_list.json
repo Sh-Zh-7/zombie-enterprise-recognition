@@ -1,0 +1,9 @@
+{
+  "n_neighbors": [3, 4, 5, 6, 7],
+  "weights": ["uniform"],
+  "algorithm": ["auto", "ball_tree", "kd_tree", "brute"],
+  "leaf_size": [30],
+  "p": [1, 2],
+  "metric": ["minkowski"],
+  "n_jobs": [1]
+}
