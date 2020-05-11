@@ -47,7 +47,7 @@ def main(filename1, filename2):
 if __name__ == "__main__":
     # 得到train set和test set的false positive和accuracy
     print("Train Set:")
-    main("base_train_sum.csv", "year_report_train_sum.csv")
+    main("../row_data/base_train_sum.csv", "../row_data/year_report_train_sum.csv")
     print("--------------------------------------------")
     print("Validation Set:")
-    main("base_verify1.csv", "year_report_verify1.csv")
+    main("../row_data/base_verify1.csv", "../row_data/year_report_verify1.csv")
