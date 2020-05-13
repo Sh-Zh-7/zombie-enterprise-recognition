@@ -1,6 +1,6 @@
 from sklearn.svm import SVC
 
-from src.utils import *
+from utils import *
 
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier

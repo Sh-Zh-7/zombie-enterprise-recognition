@@ -1,5 +1,5 @@
-from src.utils import *
-from src.main import model_path, models
+from utils import *
+from main import model_path, models
 from sklearn.metrics import auc, roc_curve, \
     accuracy_score, precision_score, recall_score
 

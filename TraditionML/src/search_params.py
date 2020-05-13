@@ -1,4 +1,4 @@
-from src.main import *
+from main import *
 
 from sklearn.model_selection import GridSearchCV
 

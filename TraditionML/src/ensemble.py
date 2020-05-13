@@ -6,7 +6,7 @@ from sklearn.externals import joblib
 from sklearn.model_selection import KFold
 from sklearn.svm import SVC
 
-from src.utils import *
+from utils import *
 
 SEED = 233
 

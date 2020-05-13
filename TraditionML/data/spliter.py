@@ -8,8 +8,8 @@
 
 import random
 import pandas as pd
-from src import utils
 import logging
+import utils
 
 SPILT_RATE = 0.2
 
