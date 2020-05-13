@@ -33,7 +33,12 @@ The **off-line training** is made by
 
 The **on-line deployment** and **the development of web front-end and back-end** is by
 
-- YuningWu
+- <img src="./assets/wyn.jpg" width="100px">Yuning Wu
+
+Guidance from **economics students**:
+
+- <img src="./assets/wjc.jpg" width="100px" margin="0px">Jiacheng Wang
+- <img src="./assets/zyc.jpg" width=100 margin="0px">Yichi Zhang
 
 # LICENSE
 
