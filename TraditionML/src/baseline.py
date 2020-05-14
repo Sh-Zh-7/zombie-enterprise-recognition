@@ -1,3 +1,5 @@
+import joblib
+import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from warnings import filterwarnings
 
@@ -60,7 +62,7 @@ def Train(model, X_train, y_train):
         print("Fold {} OOB Score: {}".format(fold, model.oob_score_))
         print("Average OOB Score: {}".format(oob))
     # Save model
-    # joblib.dump(model, "./models/checkpoint.pkl")
+    # joblib.dump(model, "./baseline.pkl")
     return fprs, tprs, scores, feature_importance
 
 
@@ -88,11 +90,19 @@ if __name__ == "__main__":
     # Using RandomForest
     params = Params("../models/RandomForest/best_params.json")
     rfc = RandomForestClassifier(**params.dict)
-    # rfc.fit(df_train_set, train_y)
+    all_features = df_train_set.columns
     fprs, tprs, scores, importance = Train(rfc, df_train_set.values, train_y)
     prediction = rfc.predict(df_test_set)
 
-    PlotROCCurve(fprs, tprs)
+    # PlotROCCurve(fprs, tprs)
+    importance["Mean_Importance"] = importance.mean(axis=1)
+    top_6_features_index = np.argsort(importance["Mean_Importance"])[:6]
+    target_features, target_importance = [], []
+    for index in top_6_features_index:
+        target_features.append(all_features[index])
+        target_importance.append(importance["Mean_Importance"][index])
+    print(target_features)
+    PlotImportance(target_features, target_importance)
     plt.show()
 
     tp, tn, fp, fn = GetMatrices(prediction, test_y)
